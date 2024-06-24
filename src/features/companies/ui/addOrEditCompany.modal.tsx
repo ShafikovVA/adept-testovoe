@@ -27,7 +27,6 @@ export const AddOrEditCompanyModal = (props: IAddCompanyModal) => {
           ...formInputs,
           id: editableCompany.id,
           active: editableCompany.active,
-          employees: editableCompany.employees,
         }),
       );
     } else {
