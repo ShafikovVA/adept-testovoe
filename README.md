@@ -1,11 +1,11 @@
 ## Тестовое задание
 Демо: https://adept-testovoe.vercel.app/
 
-> *NODE: v*
+> *NODE: v20.12.0*
 >
-> *NPM: v*
+> *NPM: v10.5.0*
 >
-> *NVM: v*
+> *NVM: v1.1.12*
 
 ### Scripts:
 > npm run dev - запускает сборку проекта: дев
