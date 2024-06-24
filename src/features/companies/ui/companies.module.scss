@@ -1,0 +1,88 @@
+.companies {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+
+  .title-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0px 15px 0px;
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+
+      .tools-button {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  table {
+    table-layout: fixed;
+    width: 350px;
+    border-collapse: collapse;
+
+    thead {
+      background: #f7f9fc;
+      border: thin solid #687162;
+
+      @media (prefers-color-scheme: dark) {
+        background: #6b6b6b;
+      }
+
+      th {
+        text-align: start;
+
+        &:first-child {
+          text-align: center;
+          width: 50px;
+        }
+      }
+    }
+    tbody {
+      td.loader {
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+
+  .title {
+    font-size: 24px;
+    padding-left: 30px;
+    margin: 0;
+  }
+  .form-container {
+    width: 300px;
+    margin: auto;
+
+    .title {
+      padding: 0;
+      margin-bottom: 15px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 35px;
+      justify-content: center;
+
+      .form-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      button {
+        border: thin solid #111111;
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+.container {
+  width: 1280px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  @media (min-width: 1280px) {
+    width: 1280px;
+  }
+  @media (min-width: 800px) {
+    width: 800px;
+  }
+}

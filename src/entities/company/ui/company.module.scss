@@ -1,0 +1,41 @@
+.company-item {
+  &.active {
+    background: #adadad;
+
+    &:hover {
+      background: #adadad;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &.active {
+      background: #1d1d1d;
+
+      &:hover {
+        background: #1d1d1d;
+      }
+    }
+  }
+
+  width: 100%;
+  height: 34px;
+
+  &:hover {
+    background: #dfdfdf;
+    cursor: pointer;
+    @media (prefers-color-scheme: dark) {
+      background: #3a3a3a;
+    }
+  }
+
+  td {
+    &:first-child {
+      text-align: center;
+    }
+
+    text-align: start;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
