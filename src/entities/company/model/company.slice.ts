@@ -24,11 +24,14 @@ export const companiesSlice = createSlice({
         employees: [],
       });
     },
-    editCompany: (state, { payload: company }: PayloadAction<ICompany>) => {
+    editCompany: (state, { payload: company }: PayloadAction<Omit<ICompany, 'employees'>>) => {
       state.companies.splice(
         state.companies.findIndex((store) => store.id === company.id),
         1,
-        company,
+        {
+          ...company,
+          employees: state.companies[state.companies.findIndex((store) => store.id === company.id)].employees,
+        },
       );
     },
     removeCompany: (state, { payload: companies }: PayloadAction<number[]>) => {

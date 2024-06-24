@@ -85,7 +85,7 @@ export const Companies = () => {
         </thead>
         <tbody ref={companiesRef} className={styles.thead}>
           {companies.map((companyItem) => (
-            <Company key={companyItem.id} {...companyItem} active={isActive} />
+            <Company key={companyItem.id} {...companyItem} active={isActive} employeesLength={companyItem.employees.length} />
           ))}
           <tr ref={ref}>
             {isLoading && (

@@ -6,8 +6,12 @@ import { ICompany } from '../types/ICompany';
 import styles from './company.module.scss';
 import { editCompany } from '../model/company.slice';
 
-export const Company = memo((props: ICompany) => {
-  const { title, active, employees } = props;
+interface ICompanyProps extends Omit<ICompany, 'employees'> {
+  employeesLength: number;
+}
+
+export const Company = memo((props: ICompanyProps) => {
+  const { title, active, employeesLength } = props;
   const dispatch = useDispatch();
   const [isActive, setActive] = useState<boolean>(active || false);
 
@@ -28,7 +32,7 @@ export const Company = memo((props: ICompany) => {
         <input type="checkbox" onChange={changeHandler} checked={isActive} />
       </td>
       <td className={styles.td}>
-        ({employees.length}) {title}
+        ({employeesLength}) {title}
       </td>
     </tr>
   );
