@@ -1,15 +1,19 @@
-import { ReactNode, MouseEvent, useEffect } from 'react';
+import {ReactNode, MouseEvent, useEffect, memo} from 'react';
 import { BsXCircle } from 'react-icons/bs';
 import styles from './modal.module.scss';
+import {useDispatch} from "react-redux";
+import {closeModal} from "@shared/ui/modal/modal.slice.ts";
 
 interface IAddModal {
   isOpen: boolean;
   children?: ReactNode;
-  closeModal?: (event?: MouseEvent<HTMLButtonElement>) => void;
 }
 
-export const Modal = (props: IAddModal) => {
-  const { isOpen, children, closeModal } = props;
+export const Modal = memo((props: IAddModal) => {
+  const { isOpen, children } = props;
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -21,20 +25,19 @@ export const Modal = (props: IAddModal) => {
   }, [isOpen]);
 
   const onClickOutside = (event: MouseEvent<HTMLDivElement>) => {
-    if (closeModal && event.target === event.currentTarget) {
-      closeModal();
+    if (event.target === event.currentTarget) {
     }
   };
 
   useEffect(() => {
     document.addEventListener('keydown', (event) => {
-      if (closeModal && event.key === 'Escape') {
-        closeModal();
+      if (event.key === 'Escape') {
+        dispatch(closeModal());
       }
     });
     return document.removeEventListener('keydown', (event) => {
-      if (closeModal && event.key === 'Escape') {
-        closeModal();
+      if (event.key === 'Escape') {
+        dispatch(closeModal());
       }
     });
   }, []);
@@ -43,7 +46,7 @@ export const Modal = (props: IAddModal) => {
     isOpen && (
       <div className={styles['model-container']} onClick={onClickOutside}>
         <div className={styles['model-body']}>
-          <button type="button" className={styles['model-close-button']} onClick={closeModal}>
+          <button type="button" className={styles['model-close-button']} onClick={() => dispatch(closeModal())}>
             {' '}
             <BsXCircle />
           </button>
@@ -52,4 +55,4 @@ export const Modal = (props: IAddModal) => {
       </div>
     )
   );
-};
+});

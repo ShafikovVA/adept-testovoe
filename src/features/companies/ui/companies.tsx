@@ -1,23 +1,18 @@
 import { BsPlusCircle, BsFillTrash3Fill, BsPencilSquare } from 'react-icons/bs';
 import {
-  ChangeEvent, useCallback, useEffect, useRef, useState,
+  ChangeEvent, useEffect, useRef, useState,
 } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Company } from '@entities/company/ui/company';
 import { useCompany } from '@entities/company/hooks/useCompany';
-import { Modal } from '@/shared/ui/modal';
-import { AddOrEditCompanyModal } from './addOrEditCompany.modal';
 import styles from './companies.module.scss';
 import { ICompanies } from '@/entities/company/types/ICompanies';
 import { Loader } from '@/shared/ui/loader';
 import { removeCompany } from '@/entities/company/model/company.slice';
 import { getPaginatedCompanies } from '@/entities/company/model/company.actions';
 import { useAppDispatch } from '@/shared/hooks/useAppDispatch';
-
-interface ICompaniesOpenModal {
-  open: boolean,
-  isEditable?: boolean,
-}
+import {closeModal, openModal} from "@shared/ui/modal/modal.slice.ts";
+import {AddOrEditCompanyModal} from "@features/companies/ui/addOrEditCompany.modal.tsx";
 
 export const Companies = () => {
   const { ref, inView } = useInView();
@@ -25,39 +20,32 @@ export const Companies = () => {
 
   const [isActive, setActive] = useState<boolean>(false);
   const companiesRef = useRef<HTMLTableSectionElement>(null);
-  const [openModal, setOpenModal] = useState<ICompaniesOpenModal>({
-    open: false,
-    isEditable: false
-  });
+
   const [pageCompany, setPageCompany] = useState<number>(1);
   const { companies, isLoading, pages }: ICompanies = useCompany().companies;
   const { activeCompanies } = useCompany();
 
-  const openSimpleModal = () => setOpenModal({
-    open: true,
-  });
-
-  const  openEditableModal = () => setOpenModal({
-    open: true,
-    isEditable: true,
-  })
-
-  const resetModal = () => setOpenModal({
-    open: false,
-    isEditable: false
-  });
 
   const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setActive(event.target.checked);
   };
 
-  const addButtonHandler = useCallback(() => {
-    openSimpleModal()
-  }, [setOpenModal]);
+
+
+  const addButtonHandler = () => {
+    dispatch(openModal({
+      view: 'companies',
+      viewData: {
+
+      }
+    }))
+  };
 
   const editButtonHandler = () => {
     if (activeCompanies.length === 1) {
-      openEditableModal();
+      dispatch(openModal({
+        view: <AddOrEditCompanyModal onSuccess={() => dispatch(closeModal())} isEditable />
+      }))
     }
   };
 
@@ -123,19 +111,6 @@ export const Companies = () => {
           </tr>
         </tbody>
       </table>
-      {
-        openModal.open ? (
-          <Modal
-            isOpen={openModal.open}
-            closeModal={resetModal}
-          >
-            <AddOrEditCompanyModal
-              isEditable={openModal.isEditable}
-              onSuccess={resetModal}
-            />
-          </Modal>
-        ) : ''
-      }
 
     </div>
   );

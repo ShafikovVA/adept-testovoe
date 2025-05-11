@@ -2,17 +2,15 @@ import { BsPlusCircle, BsFillTrash3Fill, BsPencilSquare } from 'react-icons/bs';
 import { ChangeEvent, useState } from 'react';
 import { Employee } from '@entities/employee/ui/employee';
 import { useDispatch } from 'react-redux';
-import { Modal } from '@/shared/ui/modal';
-import { AddOrEditEmployeeModal } from './addOrEditEmployee.modal';
 import styles from './emplyees.module.scss';
 import { useCompany } from '@/entities/company/hooks/useCompany';
 import { removeEmployee } from '@/entities/company/model/company.slice';
+import {closeModal, openModal} from "@shared/ui/modal/modal.slice.ts";
+import {AddOrEditEmployeeModal} from "@features/employes/ui/addOrEditEmployee.modal.tsx";
 
 export const Employees = () => {
   const [isActive, setActive] = useState(false);
   const dispatch = useDispatch();
-  const [openAddModal, setOpenAddModal] = useState(false);
-  const [openEditModal, setOpenEditModal] = useState(false);
 
   const { companies, activeCompanies, activeEmployees} = useCompany();
 
@@ -25,10 +23,14 @@ export const Employees = () => {
   };
 
   const addButtonHandler = () => {
-    setOpenAddModal(true);
+    dispatch(openModal({
+      view: <AddOrEditEmployeeModal onSuccess={() => dispatch(closeModal())} />
+    }))
   };
   const editButtonHandler = () => {
-    setOpenEditModal(true);
+    dispatch(openModal({
+      view: <AddOrEditEmployeeModal isEdit onSuccess={() => dispatch(closeModal())} />
+    }))
   };
 
   const removeButtonHandler = () => {
@@ -85,21 +87,6 @@ export const Employees = () => {
             ))}
         </tbody>
       </table>
-      <Modal
-        isOpen={openAddModal || openEditModal}
-        closeModal={() => {
-          setOpenEditModal(false);
-          setOpenAddModal(false);
-        }}
-      >
-        <AddOrEditEmployeeModal
-          isEdit={openEditModal}
-          onSuccess={() => {
-            setOpenEditModal(false);
-            setOpenAddModal(false);
-          }}
-        />
-      </Modal>
     </div>
   );
 };
