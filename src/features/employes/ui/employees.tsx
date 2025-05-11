@@ -14,8 +14,8 @@ export const Employees = () => {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  const { companies, activeCompanies, activeEmployees, activeItems} = useCompany();
-  console.log(activeItems);
+  const { companies, activeCompanies, activeEmployees} = useCompany();
+
   const prepareEmployees = Object.keys(activeCompanies).length > 0 ?
     activeCompanies.flatMap((index) => companies.companies[Number(index)].employees) : [];
   [];
