@@ -12,13 +12,15 @@ interface IEmployeeModal {
 
 export const AddOrEditEmployeeModal = (props: IEmployeeModal) => {
   const { onSuccess, isEdit } = props;
-  const { activeCompanies } = useCompany();
-  const activeEmployees = activeCompanies.length > 0 ? activeCompanies[0].employees.filter(({ active }) => active) : [];
+  const { activeCompanies, activeEmployees, companies } = useCompany();
+
+  const activeEmployee = companies.companies[activeCompanies[0]].employees[activeEmployees[0]];
+
   const dispatch = useDispatch();
   const [formInputs, setFormInputs] = useState<Omit<IEmployee, 'id' | 'companyId'>>({
-    firstName: isEdit ? activeEmployees[0].firstName : '',
-    lastName: isEdit ? activeEmployees[0].lastName : '',
-    jobTitle: isEdit ? activeEmployees[0].jobTitle : '',
+    firstName: isEdit ? activeEmployee.firstName : '',
+    lastName: isEdit ? activeEmployee.lastName : '',
+    jobTitle: isEdit ? activeEmployee.jobTitle : '',
   });
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
@@ -28,18 +30,17 @@ export const AddOrEditEmployeeModal = (props: IEmployeeModal) => {
         editEmployee({
           employee: {
             ...formInputs,
-            active: activeEmployees[0].active,
-            id: activeEmployees[0].id,
           },
-          companyId: activeCompanies[0].id,
+          companyIndex: activeCompanies[0],
+          employeeIndex: activeEmployees[0],
         }),
       );
     } else {
       dispatch(
         addEmployee({
           ...formInputs,
-          companyId: activeCompanies[0].id,
           employee: { ...formInputs },
+          companyIndex: activeCompanies[0],
         }),
       );
     }

@@ -4,7 +4,7 @@ import { ICompany } from '../types/ICompany';
 import { initialCompanies } from './initialCompanies';
 
 export const fetchPaginatedCompanies = (page: number): Promise<IPaginateData<ICompany[]>> => new Promise<IPaginateData<ICompany[]>>((resolve) => {
-  setTimeout(() => resolve(paginate<ICompany[]>(initialCompanies, 20, page)), 1000);
+  setTimeout(() => resolve(paginate<ICompany[]>(initialCompanies, 20, page, initialCompanies.length)), 1000);
 });
 
 export const getPaginatedCompanies = createAsyncThunk('companies', async (page: number, thunkApi) => {

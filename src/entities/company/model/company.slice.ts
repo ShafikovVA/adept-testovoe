@@ -6,6 +6,7 @@ import {IEmployee} from '@/entities/employee/types/IEmployee';
 const initialState: ICompanies = {
   isLoading: false,
   companies: [],
+  companiesLength: 0,
   pages: 2,
 };
 
@@ -15,10 +16,11 @@ export const companiesSlice = createSlice({
   initialState,
   reducers: {
     addCompany: (state, { payload: company }: PayloadAction<ICompanyForm>) => {
-      state.companies.push({
+      state.companies.splice(state.companiesLength - 1, 1, {
         ...company,
         employees: [],
       });
+      return state;
     },
     editCompany: (state, { payload: company }: PayloadAction<ICompanyEditForm>) => {
       state.companies.splice(
@@ -71,6 +73,7 @@ export const companiesSlice = createSlice({
       state.isLoading = false;
       state.pages = paginatedCompany.pages;
       state.companies = [...state.companies, ...paginatedCompany.data];
+      state.companiesLength = paginatedCompany.totalLength;
     });
   },
 });

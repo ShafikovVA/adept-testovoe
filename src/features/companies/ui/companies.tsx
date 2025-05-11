@@ -1,6 +1,6 @@
 import { BsPlusCircle, BsFillTrash3Fill, BsPencilSquare } from 'react-icons/bs';
 import {
-  ChangeEvent, useEffect, useRef, useState,
+  ChangeEvent, useCallback, useEffect, useRef, useState,
 } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Company } from '@entities/company/ui/company';
@@ -51,7 +51,10 @@ export const Companies = () => {
     setActive(event.target.checked);
   };
 
-  const addButtonHandler = openSimpleModal;
+  const addButtonHandler = useCallback(() => {
+    openSimpleModal()
+  }, [setOpenModal]);
+
   const editButtonHandler = () => {
     if (activeCompanies.length === 1) {
       openEditableModal();
@@ -120,15 +123,20 @@ export const Companies = () => {
           </tr>
         </tbody>
       </table>
-      <Modal
-        isOpen={openModal.open}
-        closeModal={resetModal}
-      >
-        <AddOrEditCompanyModal
-          isEditable={openModal.isEditable}
-          onSuccess={resetModal}
-        />
-      </Modal>
+      {
+        openModal.open ? (
+          <Modal
+            isOpen={openModal.open}
+            closeModal={resetModal}
+          >
+            <AddOrEditCompanyModal
+              isEditable={openModal.isEditable}
+              onSuccess={resetModal}
+            />
+          </Modal>
+        ) : ''
+      }
+
     </div>
   );
 };

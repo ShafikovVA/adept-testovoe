@@ -4,6 +4,7 @@ export interface ICompanies {
   isLoading: boolean;
   pages: number;
   companies: ICompany[];
+  companiesLength: number;
 }
 
 export interface ICompanyForm extends Omit<ICompany, 'employees'> {}

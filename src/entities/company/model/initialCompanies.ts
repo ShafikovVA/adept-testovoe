@@ -2,7 +2,6 @@ import { ICompany } from '../types/ICompany';
 
 export const initialCompanies: ICompany[] = [
   {
-
     title: 'Vidto',
     employees: [
       {
