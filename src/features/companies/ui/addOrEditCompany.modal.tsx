@@ -7,26 +7,26 @@ import { addCompany, editCompany } from '@/entities/company/model/company.slice'
 
 interface IAddCompanyModal {
   onSuccess?: () => void;
-  isEdit?: boolean;
+  isEditable?: boolean;
 }
 
 export const AddOrEditCompanyModal = (props: IAddCompanyModal) => {
-  const { onSuccess, isEdit } = props;
+  const { onSuccess, isEditable } = props;
   const dispatch = useDispatch();
-  const editableCompany = useCompany().activeCompanies[0];
+  const companies = useCompany().companies;
+  const { activeCompanies } = useCompany();
 
   const [formInputs, setFormInputs] = useState<Omit<ICompany, 'id' | 'active' | 'employees'>>({
-    title: isEdit ? '' : editableCompany.title,
+    title: isEditable ? companies.companies[activeCompanies[0]]?.title :  '',
   });
 
   const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!isEdit) {
+    if (isEditable) {
       dispatch(
         editCompany({
           ...formInputs,
-          id: editableCompany.id,
-          active: editableCompany.active,
+          index: activeCompanies[0],
         }),
       );
     } else {
@@ -39,7 +39,7 @@ export const AddOrEditCompanyModal = (props: IAddCompanyModal) => {
 
   return (
     <div className={styles['form-container']}>
-      <p className={styles.title}>{isEdit ? 'Добавить' : 'Редактировать'} компанию</p>
+      <p className={styles.title}>{isEditable ? 'Редактировать' : 'Добавить' } компанию</p>
       <form onSubmit={submitHandler}>
         <div className={styles['form-body']}>
           <label htmlFor="addTitle">Название компании</label>
@@ -53,7 +53,7 @@ export const AddOrEditCompanyModal = (props: IAddCompanyModal) => {
             placeholder="Название компании"
           />
         </div>
-        <button type="submit">{isEdit ? 'Добавить' : 'Редактировать'}</button>
+        <button type="submit">{isEditable ? 'Редактировать' : 'Добавить'}</button>
       </form>
     </div>
   );

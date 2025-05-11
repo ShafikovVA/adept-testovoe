@@ -14,9 +14,11 @@ export const Employees = () => {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  const { activeCompanies } = useCompany();
-
-  const activeEmployees = activeCompanies.length > 0 ? activeCompanies[0].employees.filter(({ active }) => active) : [];
+  const { companies, activeCompanies, activeEmployees, activeItems} = useCompany();
+  console.log(activeItems);
+  const prepareEmployees = Object.keys(activeCompanies).length > 0 ?
+    activeCompanies.flatMap((index) => companies.companies[Number(index)].employees) : [];
+  [];
 
   const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setActive(event.target.checked);
@@ -32,8 +34,8 @@ export const Employees = () => {
   const removeButtonHandler = () => {
     dispatch(
       removeEmployee({
-        companyId: activeCompanies[0].id,
-        employeesId: activeEmployees.flatMap(({ id }) => id),
+        companyIndex: activeCompanies[0],
+        employeesIndexes: activeEmployees,
       }),
     );
   };
@@ -46,7 +48,7 @@ export const Employees = () => {
     <div className={styles.employees}>
       <div className={styles['title-block']}>
         <p className={styles.title}>
-          Сотрудники {activeCompanies.length === 1 && `(${activeCompanies[0].employees.length})`}
+          Сотрудники {activeEmployees.length === 1 && `(${activeEmployees.length})`}
         </p>
         <span className={styles.buttons}>
           {activeEmployees.length === 1 && (
@@ -78,8 +80,8 @@ export const Employees = () => {
         </thead>
         <tbody>
           {activeCompanies.length === 1
-            && activeCompanies[0].employees.map((employeeItem) => (
-              <Employee key={employeeItem.id} {...employeeItem} active={isActive} companyId={activeCompanies[0].id} />
+            && prepareEmployees.map((employeeItem, index) => (
+              <Employee key={employeeItem.firstName} isActive={activeEmployees.includes(index)} {...employeeItem} index={index} companyIndex={activeCompanies[0]} />
             ))}
         </tbody>
       </table>

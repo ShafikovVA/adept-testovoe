@@ -1,44 +1,51 @@
 import {
-  ChangeEvent, memo, useEffect, useState,
+  memo, useRef, useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { IEmployee } from '../types/IEmployee';
 import styles from './employee.module.scss';
-import { editEmployee } from '@/entities/company/model/company.slice';
+import {
+  addActiveEmployee, removeActiveEmployee
+} from "@entities/company/model/activeCompanies.slice.ts";
 
 interface IEmployeeProps extends IEmployee {
-  companyId: number;
+  companyIndex: number;
+  index: number;
+  isActive?: boolean;
 }
 
 export const Employee = memo((props: IEmployeeProps) => {
   const {
-    firstName, lastName, jobTitle, active, companyId,
+    firstName, lastName, jobTitle, companyIndex, index, isActive,
   } = props;
-  const [isActive, setActive] = useState(active || false);
   const dispatch = useDispatch();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [active, setActive] = useState(isActive)
 
-  const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    setActive(event.target.checked);
+  const changeHandler = () => {
+    if(inputRef.current?.checked){
+      dispatch(addActiveEmployee({
+        companyIndex,
+        employeeIndex: index,
+      }));
+      setActive(true);
+    }
+    else {
+      dispatch(removeActiveEmployee({
+        companyIndex,
+        employeeIndex: index,
+      }));
+      setActive(false);
+    }
   };
 
-  useEffect(() => {
-    setActive(active || false);
-  }, [active]);
 
-  useEffect(() => {
-    dispatch(
-      editEmployee({
-        employee: { ...props, active: isActive },
-        companyId,
-      }),
-    );
-  }, [isActive]);
 
   return (
-    <tr className={`${styles['employee-item']} ${isActive && styles.active}`}>
+    <tr className={`${styles['employee-item']} ${active && styles.active}`}>
       <td className={styles.td}>
-        <input type="checkbox" onChange={changeHandler} checked={isActive} />
+        <input ref={inputRef} type="checkbox" onChange={changeHandler} checked={active} />
       </td>
       <td className={styles.td}>{lastName}</td>
       <td className={styles.td}>{firstName}</td>

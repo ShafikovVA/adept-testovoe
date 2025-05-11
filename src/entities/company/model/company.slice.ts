@@ -1,11 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { ICompany } from '../types/ICompany';
 import { getPaginatedCompanies } from './company.actions';
-import { ICompanies } from '../types/ICompanies';
-import { initialCompanies } from './initialCompanies';
-import { IEmployee } from '@/entities/employee/types/IEmployee';
-
-const companiesLength = initialCompanies.length;
+import {ICompanies, ICompanyEditForm, ICompanyForm} from '../types/ICompanies';
+import {IEmployee} from '@/entities/employee/types/IEmployee';
 
 const initialState: ICompanies = {
   isLoading: false,
@@ -13,86 +9,57 @@ const initialState: ICompanies = {
   pages: 2,
 };
 
+
 export const companiesSlice = createSlice({
   name: 'companies',
   initialState,
   reducers: {
-    addCompany: (state, { payload: company }: PayloadAction<Omit<ICompany, 'id' | 'active' | 'employees'>>) => {
-      state.companies.unshift({
+    addCompany: (state, { payload: company }: PayloadAction<ICompanyForm>) => {
+      state.companies.push({
         ...company,
-        id: companiesLength + state.companies.length + 1,
         employees: [],
       });
     },
-    editCompany: (state, { payload: company }: PayloadAction<Omit<ICompany, 'employees'>>) => {
+    editCompany: (state, { payload: company }: PayloadAction<ICompanyEditForm>) => {
       state.companies.splice(
-        state.companies.findIndex((store) => store.id === company.id),
+        company.index,
         1,
         {
+          ...state.companies[company.index],
           ...company,
-          employees: state.companies[state.companies.findIndex((store) => store.id === company.id)].employees,
         },
       );
     },
     removeCompany: (state, { payload: companies }: PayloadAction<number[]>) => {
       return {
         ...state,
-        companies: state.companies.filter(({ id }) => !companies.includes(id)),
+        companies: state.companies.filter((_, index) =>  !companies.includes(index)),
       } as ICompanies;
     },
     addEmployee: (
       state,
-      { payload: { employee, companyId } }: PayloadAction<{ companyId: number; employee: Omit<IEmployee, 'id'> }>,
+      { payload: { employee, companyIndex } }: PayloadAction<{ companyIndex: number; employee: IEmployee }>,
     ) => {
-      return {
-        ...state,
-        companies: state.companies.map((company) => {
-          if (company.id === companyId) {
-            return {
-              ...company,
-              employees: [
-                {
-                  ...employee,
-                  id:
-                    state.companies
-                      .filter(({ employees }) => employees.length > 0)
-                      .flatMap(({ employees }) => employees).length + 1,
-                },
-                ...company.employees,
-              ],
-            };
-          }
-          return company;
-        }),
-      };
+      state.companies[companyIndex].employees.push(employee);
+      return state;
     },
     editEmployee: (
       state,
-      { payload: { employee, companyId } }: PayloadAction<{ companyId: number; employee: IEmployee }>,
+      { payload: { employee, employeeIndex, companyIndex } }: PayloadAction<{ companyIndex: number; employeeIndex:number, employee: IEmployee }>,
     ) => {
-      const employees = state.companies.find(({ id }) => id === companyId)?.employees;
+      const employees = state.companies[companyIndex].employees;
       employees?.splice(
-        employees.findIndex((store) => store.id === employee.id),
+        employeeIndex,
         1,
         employee,
       );
     },
     removeEmployee: (
       state,
-      { payload: { employeesId, companyId } }: PayloadAction<{ companyId: number; employeesId: number[] }>,
+      { payload: { employeesIndexes, companyIndex } }: PayloadAction<{ companyIndex: number; employeesIndexes: number[] }>,
     ) => {
-      return {
-        ...state,
-        companies: state.companies.map((company) => {
-          if (company.id === companyId) {
-            return {
-              ...company,
-              employees: company.employees.filter(({ id }) => !employeesId.includes(id)),
-            };
-          }
-          return company;
-        }),
-      };
+      state.companies[companyIndex].employees = state.companies[companyIndex].employees.filter((_, index) => !employeesIndexes.includes(index));
+      return state;
     },
   },
   extraReducers: (builder) => {

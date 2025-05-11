@@ -14,32 +14,53 @@ import { removeCompany } from '@/entities/company/model/company.slice';
 import { getPaginatedCompanies } from '@/entities/company/model/company.actions';
 import { useAppDispatch } from '@/shared/hooks/useAppDispatch';
 
+interface ICompaniesOpenModal {
+  open: boolean,
+  isEditable?: boolean,
+}
+
 export const Companies = () => {
   const { ref, inView } = useInView();
   const dispatch = useAppDispatch();
 
   const [isActive, setActive] = useState<boolean>(false);
   const companiesRef = useRef<HTMLTableSectionElement>(null);
-  const [openAddModal, setOpenAddModal] = useState<boolean>(false);
-  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<ICompaniesOpenModal>({
+    open: false,
+    isEditable: false
+  });
   const [pageCompany, setPageCompany] = useState<number>(1);
   const { companies, isLoading, pages }: ICompanies = useCompany().companies;
   const { activeCompanies } = useCompany();
+
+  const openSimpleModal = () => setOpenModal({
+    open: true,
+  });
+
+  const  openEditableModal = () => setOpenModal({
+    open: true,
+    isEditable: true,
+  })
+
+  const resetModal = () => setOpenModal({
+    open: false,
+    isEditable: false
+  });
 
   const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setActive(event.target.checked);
   };
 
-  const addButtonHandler = () => {
-    setOpenAddModal(true);
-  };
+  const addButtonHandler = openSimpleModal;
   const editButtonHandler = () => {
-    setOpenEditModal(true);
+    if (activeCompanies.length === 1) {
+      openEditableModal();
+    }
   };
 
   const removeButtonHandler = () => {
     if (activeCompanies.length === 0) return;
-    dispatch(removeCompany(activeCompanies.flatMap(({ id }) => id)));
+    dispatch(removeCompany(activeCompanies));
   };
 
   useEffect(() => {
@@ -54,13 +75,13 @@ export const Companies = () => {
       <div className={styles['title-block']}>
         <p className={styles.title}>Компании ({companies.length})</p>
         <span className={styles.buttons}>
-          {companies.filter((company) => company.active).length === 1 && (
-            <button type="button" className={styles['tools-button']} onClick={addButtonHandler}>
+          {activeCompanies.length === 1 && (
+            <button type="button" className={styles['tools-button']} onClick={editButtonHandler}>
               {' '}
               <BsPencilSquare />{' '}
             </button>
           )}
-          <button type="button" className={styles['tools-button']} onClick={editButtonHandler}>
+          <button type="button" className={styles['tools-button']} onClick={addButtonHandler}>
             {' '}
             <BsPlusCircle />{' '}
           </button>
@@ -84,8 +105,8 @@ export const Companies = () => {
           </tr>
         </thead>
         <tbody ref={companiesRef} className={styles.thead}>
-          {companies.map((companyItem) => (
-            <Company key={companyItem.id} {...companyItem} active={isActive} employeesLength={companyItem.employees.length} />
+          {companies.map((companyItem, index) => (
+            <Company key={companyItem.title} {...companyItem} isActive={activeCompanies.includes(index)} index={index} employeesLength={companyItem.employees.length} />
           ))}
           <tr ref={ref}>
             {isLoading && (
@@ -100,18 +121,12 @@ export const Companies = () => {
         </tbody>
       </table>
       <Modal
-        isOpen={openEditModal || openAddModal}
-        closeModal={() => {
-          setOpenEditModal(false);
-          setOpenAddModal(false);
-        }}
+        isOpen={openModal.open}
+        closeModal={resetModal}
       >
         <AddOrEditCompanyModal
-          isEdit={openEditModal}
-          onSuccess={() => {
-            setOpenEditModal(false);
-            setOpenAddModal(false);
-          }}
+          isEditable={openModal.isEditable}
+          onSuccess={resetModal}
         />
       </Modal>
     </div>

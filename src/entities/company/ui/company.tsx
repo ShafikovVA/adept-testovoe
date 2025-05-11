@@ -1,35 +1,39 @@
 import {
-  ChangeEvent, memo, useEffect, useState,
+  memo, useCallback, useRef, useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
 import { ICompany } from '../types/ICompany';
 import styles from './company.module.scss';
-import { editCompany } from '../model/company.slice';
+import {addActiveCompany, removeActiveCompany} from "@entities/company/model/activeCompanies.slice.ts";
 
 interface ICompanyProps extends Omit<ICompany, 'employees'> {
+  index: number;
+  isActive: boolean;
   employeesLength: number;
 }
 
 export const Company = memo((props: ICompanyProps) => {
-  const { title, active, employeesLength } = props;
+  const { title, employeesLength, index, isActive } = props;
   const dispatch = useDispatch();
-  const [isActive, setActive] = useState<boolean>(active || false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [active, setActive] = useState(isActive)
 
-  useEffect(() => {
-    setActive(active || false);
-  }, [active]);
+  const changeHandler = useCallback(() => {
 
-  useEffect(() => {
-    dispatch(editCompany({ ...props, active: isActive }));
-  }, [isActive]);
+    if(inputRef.current?.checked){
+      dispatch(addActiveCompany(index));
+      setActive(true);
+    }
+    else {
+      dispatch(removeActiveCompany(index));
+      setActive(false);
+    }
+  }, [inputRef]);
 
-  const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    setActive(event.target.checked);
-  };
   return (
-    <tr className={`${styles['company-item']} ${isActive && styles.active}`}>
+    <tr className={`${styles['company-item']} ${active && styles.active}`}>
       <td className={styles.td}>
-        <input type="checkbox" onChange={changeHandler} checked={isActive} />
+        <input ref={inputRef} type="checkbox" onChange={changeHandler} checked={active} />
       </td>
       <td className={styles.td}>
         ({employeesLength}) {title}
